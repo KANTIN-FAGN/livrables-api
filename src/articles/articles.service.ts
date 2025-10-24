@@ -12,13 +12,15 @@ export class ArticlesService {
         return this.prisma.article.create({ data: createArticleDto });
     }
 
-    async findAll(page: number = 1, limit: number = 10) {
+    async findAll(page: number, limit: number) {
         const skip = (page - 1) * limit;
+
+        const LimitNum = Number(limit);
 
         const [data, total] = await this.prisma.$transaction([
             this.prisma.article.findMany({
                 skip,
-                take: limit,
+                take: LimitNum,
                 orderBy: { createdAt: 'desc' },
                 where: { published: true },
             }),
