@@ -30,6 +30,7 @@ export class ArticlesController {
         );
     }
 
+
     @Get()
     @ApiOkResponse({ type: ArticleEntity, isArray: true })
     async findAll() {

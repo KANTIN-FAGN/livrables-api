@@ -79,7 +79,128 @@ async function main() {
         },
     });
 
-    console.log({ user1, user2, post1, post2, post3 });
+    // TypeScript
+    const post4 = await prisma.article.upsert({
+        where: { title: 'Understanding Prisma Relations' },
+        update: { authorId: user1.id },
+        create: {
+            title: 'Understanding Prisma Relations',
+            body: 'Relations in Prisma allow you to model connections between tables...',
+            description: 'Guide pratique des relations 1-1, 1-n et n-n avec Prisma.',
+            published: true,
+            authorId: user1.id,
+        },
+    });
+
+    const post5 = await prisma.article.upsert({
+        where: { title: 'NestJS + Prisma: Best Practices' },
+        update: { authorId: user2.id },
+        create: {
+            title: 'NestJS + Prisma: Best Practices',
+            body: 'Learn how to structure modules, services, and repositories with Prisma...',
+            description: 'Architecture, transactions, validation et tests e2e.',
+            published: true,
+            authorId: user2.id,
+        },
+    });
+
+    const post6 = await prisma.article.upsert({
+        where: { title: 'Transactions in Prisma: A Deep Dive' },
+        update: {},
+        create: {
+            title: 'Transactions in Prisma: A Deep Dive',
+            body: 'Prisma provides $transaction for atomic operations across multiple queries...',
+            description: 'Quand et comment utiliser interactive transactions.',
+            published: false,
+            authorId: user1.id,
+        },
+    });
+
+    const post7 = await prisma.article.upsert({
+        where: { title: 'Seeding Strategies for Development' },
+        update: {},
+        create: {
+            title: 'Seeding Strategies for Development',
+            body: 'Design your seed to be idempotent with upsert and unique fields...',
+            description: 'Idempotence, jeux de données, et environnements.',
+            published: true,
+            authorId: user2.id,
+        },
+    });
+
+    const post8 = await prisma.article.upsert({
+        where: { title: 'Optimizing Prisma Queries' },
+        update: { published: true },
+        create: {
+            title: 'Optimizing Prisma Queries',
+            body: 'Select and include can drastically reduce payload size...',
+            description: 'select/include, pagination, indexation SQL.',
+            published: true,
+            authorId: user1.id,
+        },
+    });
+
+    const post9 = await prisma.article.upsert({
+        where: { title: 'Handling Migrations Safely' },
+        update: {},
+        create: {
+            title: 'Handling Migrations Safely',
+            body: 'Use migrate dev in development and migrate deploy in CI/CD...',
+            description: 'Stratégies de rollback et données de prod.',
+            published: false,
+            authorId: user2.id,
+        },
+    });
+
+    const post10 = await prisma.article.upsert({
+        where: { title: 'Prisma Middlewares Explained' },
+        update: {},
+        create: {
+            title: 'Prisma Middlewares Explained',
+            body: 'Middlewares let you hook into query execution for logging, RBAC...',
+            description: 'Exemples de logging et soft-delete.',
+            published: true,
+            authorId: user1.id,
+        },
+    });
+
+    const post11 = await prisma.article.upsert({
+        where: { title: 'Soft Delete with Prisma' },
+        update: {},
+        create: {
+            title: 'Soft Delete with Prisma',
+            body: 'Implement soft deletes using a deletedAt column and query filters...',
+            description: 'Patterns et pièges à éviter.',
+            published: true,
+            authorId: user2.id,
+        },
+    });
+
+    const post12 = await prisma.article.upsert({
+        where: { title: 'Validating Data with class-validator' },
+        update: {},
+        create: {
+            title: 'Validating Data with class-validator',
+            body: 'Combine DTOs in NestJS with class-validator to ensure input quality...',
+            description: 'Decorators, pipes, et messages d’erreur.',
+            published: true,
+            authorId: user1.id,
+        },
+    });
+
+    const post13 = await prisma.article.upsert({
+        where: { title: 'Deploying Prisma Apps' },
+        update: {},
+        create: {
+            title: 'Deploying Prisma Apps',
+            body: 'From environment variables to connection pooling with PgBouncer...',
+            description: 'Checklists de déploiement et observabilité.',
+            published: false,
+            authorId: user2.id,
+        },
+    });
+
+    console.log("seed done");
 }
 // execute the main function
 main()
