@@ -1,7 +1,7 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
-import {CreateArticleDto} from './dto/create-article.dto';
-import {UpdateArticleDto} from './dto/update-article.dto';
-import {PrismaService} from 'src/prisma/prisma.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateArticleDto } from './dto/create-article.dto';
+import { UpdateArticleDto } from './dto/update-article.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ArticlesService {
@@ -12,12 +12,37 @@ export class ArticlesService {
         return this.prisma.article.create({ data: createArticleDto });
     }
 
-    findAll() {
-        return this.prisma.article.findMany({ where: { published: true } });
+    async findAll(page: number = 1, limit: number = 10) {
+        const skip = (page - 1) * limit;
+
+        const [data, total] = await this.prisma.$transaction([
+            this.prisma.article.findMany({
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                where: { published: true },
+            }),
+            this.prisma.article.count({ where: { published: true } }),
+        ]);
+
+        return { data, total };
     }
 
-    findDrafts() {
-        return this.prisma.article.findMany({ where: { published: false } });
+
+    async findDrafts(page: number = 1, limit: number = 10) {
+        const skip = (page - 1) * limit;
+
+        const [data, total] = await this.prisma.$transaction([
+            this.prisma.article.findMany({
+                where: { published: false },
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.article.count({ where: { published: false } }),
+        ]);
+
+        return { data, total };
     }
 
     async findOne(id: number) {

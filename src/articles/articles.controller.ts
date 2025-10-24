@@ -7,18 +7,19 @@ import {
     Param,
     Delete,
     ParseIntPipe, UseGuards,
+    Query,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import {ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ArticleEntity } from './entities/article.entity';
-import {JwtAuthGuard} from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @Controller('articles')
 @ApiTags('articles')
 export class ArticlesController {
-    constructor(private readonly articlesService: ArticlesService) {}
+    constructor(private readonly articlesService: ArticlesService) { }
 
     @Post()
     @UseGuards(JwtAuthGuard)
@@ -30,21 +31,52 @@ export class ArticlesController {
         );
     }
 
+
+    //pagination ici :
+
     @Get()
     @ApiOkResponse({ type: ArticleEntity, isArray: true })
-    async findAll() {
-        const articles = await this.articlesService.findAll();
-        return articles.map((article) => new ArticleEntity(article));
+    @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+    @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+    async findAll(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10,
+    ) {
+        const { data, total } = await this.articlesService.findAll(page, limit);
+        return {
+            articles: data.map((article) => new ArticleEntity(article)),
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
     }
+
 
     @Get('drafts')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @ApiOkResponse({ type: ArticleEntity, isArray: true })
-    async findDrafts() {
-        const drafts = await this.articlesService.findDrafts();
-        return drafts.map((draft) => new ArticleEntity(draft));
+    @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+    @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+    async findDrafts(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10,
+    ) {
+        const { data, total } = await this.articlesService.findDrafts(page, limit);
+        return {
+            data: data.map((draft) => new ArticleEntity(draft)),
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
     }
+
 
     @Get(':id')
     @ApiOkResponse({ type: ArticleEntity })
